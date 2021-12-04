@@ -6,6 +6,10 @@ When you press the binded key, the program will start clicking "A" and "D" keys 
 
 I used "Hook Manager" library to detect keys pressing while program is minimized.
 
+**Instructions:**
+1. To change the bind key you can double click on textfield and press a new key.
+2. To change the interval between clicks you can change this interval inside the Interval textfield and press "Save".
+
 
 Feel free to suggest your advices for this project.
 
