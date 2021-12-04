@@ -167,7 +167,7 @@ namespace PropNightADBind
                     this.Invoke(new Action(() =>
                     {
                         keybd_event(0x41, 0x02, 0, UIntPtr.Zero);
-                        //Thread.Sleep(1);
+
                         keybd_event(0x41, 0x82, 0x2, UIntPtr.Zero);
 
                         if(cbDelay.Checked)
@@ -176,7 +176,7 @@ namespace PropNightADBind
                             Thread.Sleep(Properties.Settings.Default.Interval);
 
                         keybd_event(0x44, 0x02, 0, UIntPtr.Zero);
-                        //Thread.Sleep(1);
+
                         keybd_event(0x44, 0x82, 0x2, UIntPtr.Zero);
 
                         if (cbDelay.Checked)
