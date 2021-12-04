@@ -37,7 +37,7 @@ namespace PropNightADBind
             this.txtInterval = new System.Windows.Forms.TextBox();
             this.btnSave = new System.Windows.Forms.Button();
             this.cbDelay = new System.Windows.Forms.CheckBox();
-            this.txtBind = new ReadOnlyTextBox();
+            this.txtBind = new PropNightADBind.ReadOnlyTextBox();
             this.lblStatus = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
