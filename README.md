@@ -1,4 +1,4 @@
-# PropNightADBind
+# Propnight game Bind for A-D keys
 Auto-clicker for the Propnight game.
 
 This program is an auto-clicker for the game "Propnight".
