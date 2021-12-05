@@ -56,9 +56,9 @@ namespace PropNightADBind
             this.lblInfo.AutoSize = true;
             this.lblInfo.Location = new System.Drawing.Point(124, 92);
             this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(198, 20);
+            this.lblInfo.Size = new System.Drawing.Size(344, 20);
             this.lblInfo.TabIndex = 3;
-            this.lblInfo.Text = "_____________________";
+            this.lblInfo.Text = "DoubleClick on TextBox to change the bind key.";
             // 
             // btnInfo
             // 

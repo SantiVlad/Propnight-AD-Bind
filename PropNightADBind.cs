@@ -1,15 +1,10 @@
-﻿using System;
+﻿using Gma.UserActivityMonitor;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Gma.UserActivityMonitor;
 
 namespace PropNightADBind
 {
@@ -20,6 +15,7 @@ namespace PropNightADBind
         public const Keys DEFAULT_BIND_KEY = Keys.D9;
         public const int DEFAULT_SLEEP_INTERVAL = 20;
 
+        public static byte keyA = 0x41, keyD = 0x44;
         public static bool isEnabled = false, isInEditMode = false;
 
         public static List<Keys> AllowedKeys = new()
@@ -72,10 +68,6 @@ namespace PropNightADBind
 
         private static System.Windows.Forms.Timer timer = new() { Interval = 1000, Enabled = false };
 
-        [DllImport("user32.dll")]
-        private static extern void keybd_event(byte bVk, byte bScan,
-            uint dwFlags, UIntPtr dwExtraInfo);
-
         public PropNightADBind()
         {
             InitializeComponent();
@@ -84,7 +76,6 @@ namespace PropNightADBind
             txtBind.DoubleClick += textBox_DoubleClick;
             timer.Tick += timer_Tick;
 
-            lblInfo.Text = "DoubleClick on TextBox for changing the bind key.";
             txtBind.Text = Properties.Settings.Default.LastBindedKey.ToString();
             txtInterval.Text = Properties.Settings.Default.Interval.ToString();
 
@@ -96,8 +87,8 @@ namespace PropNightADBind
         private void timer_Tick(object sender, EventArgs e)
         {
             var timer = (System.Windows.Forms.Timer)sender;
-            timer.Stop(); timer.Enabled = false;
-            this.ShowStatus("", Color.Black);
+            BindHelper.StopTimer(timer);
+            BindHelper.ShowStatusOnLabel(lblStatus, "", Color.Black);
         }
 
         private void textBox_DoubleClick(object sender, EventArgs e)
@@ -121,8 +112,9 @@ namespace PropNightADBind
                 txtBind.ReadOnly = true;
                 txtBind.Cursor = Cursors.Arrow;
 
-                lblInfo.Text = "DoubleClick on TextBox for changing the bind key.";
-                this.ShowStatus("Key succesfully accepted.", Color.Green);
+                lblInfo.Text = "DoubleClick on TextBox to change the bind key.";
+                BindHelper.ShowStatusOnLabel(lblStatus, "Key succesfully accepted.", Color.Green);
+                BindHelper.StartTimer(timer);
             }
             else
             {
@@ -139,8 +131,8 @@ namespace PropNightADBind
 
         private void btnInfo_Click(object sender, EventArgs e)
         {
-            MessageBox.Show($"This program is an auto-clicker for the game \"Propnight\".\nWhen you press the binded key, the program will start " +
-                $"clicking <A> and <D> keys once in 10 milliseconds.\nThis can help you to set free from killer's hands.", "Clicker info.", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"This program is an auto-clicker for the game \"Propnight\".\nWhen you press the binded key ({Properties.Settings.Default.LastBindedKey}), the program will start " +
+                $"clicking <A> and <D> keys once in {Properties.Settings.Default.Interval} milliseconds.\nThis can help you to set free from killer's hands.", "Clicker info.", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -148,14 +140,17 @@ namespace PropNightADBind
             Properties.Settings.Default.Interval = int.TryParse(txtInterval.Text, out int interval) ? interval : DEFAULT_SLEEP_INTERVAL;
             Properties.Settings.Default.Save();
             txtInterval.Text = Properties.Settings.Default.Interval.ToString();
-            this.ShowStatus("Interval succesfully saved.", Color.Green);
+
+            BindHelper.ShowStatusOnLabel(lblStatus, "Interval succesfully saved.", Color.Green);
+            BindHelper.StartTimer(timer);
         }
 
-        private void ShowStatus(string Text, Color color)
+        private void AddDelay(int milliseconds)
         {
-            lblStatus.Text = Text;
-            lblStatus.ForeColor = color;
-            if (!timer.Enabled) { timer.Start(); timer.Enabled = true; }
+            if (cbDelay.Checked)
+                Thread.Sleep(milliseconds + random.Next(0, 3));
+            else
+                Thread.Sleep(milliseconds);
         }
 
         private async void StartBind()
@@ -166,23 +161,19 @@ namespace PropNightADBind
                 {
                     this.Invoke(new Action(() =>
                     {
-                        keybd_event(0x41, 0x02, 0, UIntPtr.Zero);
+                        BindHelper.PressKeyDown(keyA);
+                        //Thread.Sleep(1);
+                        BindHelper.PressKeyUp(keyA);
 
-                        keybd_event(0x41, 0x82, 0x2, UIntPtr.Zero);
+                        //Delay between clicks
+                        AddDelay(Properties.Settings.Default.Interval);
 
-                        if(cbDelay.Checked)
-                            Thread.Sleep(Properties.Settings.Default.Interval + random.Next(0, 3));
-                        else
-                            Thread.Sleep(Properties.Settings.Default.Interval);
+                        BindHelper.PressKeyDown(keyD);
+                        //Thread.Sleep(1);
+                        BindHelper.PressKeyUp(keyD);
 
-                        keybd_event(0x44, 0x02, 0, UIntPtr.Zero);
-
-                        keybd_event(0x44, 0x82, 0x2, UIntPtr.Zero);
-
-                        if (cbDelay.Checked)
-                            Thread.Sleep(Properties.Settings.Default.Interval + random.Next(0, 3));
-                        else
-                            Thread.Sleep(Properties.Settings.Default.Interval);
+                        //Delay between clicks
+                        AddDelay(Properties.Settings.Default.Interval);
                     }));
                 }
             });     

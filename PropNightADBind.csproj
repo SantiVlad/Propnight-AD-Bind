@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindHelper.cs" />
     <Compile Include="PropNightADBind.cs">
       <SubType>Form</SubType>
     </Compile>
